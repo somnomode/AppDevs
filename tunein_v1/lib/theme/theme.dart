@@ -1,22 +1,5 @@
 import 'package:flutter/material.dart';
 
-// =============================================================
-// TUNEIN — THEME
-// Traducción del sistema de diseño de Figma (TuneIn_Ver2) a Flutter.
-// Nombres: iguales a Figma, en camelCase (Dart no acepta guiones).
-//   primary-400      -> AppColors.primary400
-//   spacing-l-16     -> AppSpacing.spacingL16
-//   color-text-main  -> AppSemanticColors.colorTextMain
-// Unidades Flutter:
-//   - Tamaños, spacing, radius y letterSpacing: píxeles lógicos (dp).
-//   - Line-height: Flutter usa un multiplicador (height = lineHeight / fontSize).
-// =============================================================
-
-
-// -------------------------------------------------------------
-// 1. PRIMITIVOS DE COLOR (TuneIn / Colors → primitives)
-// -------------------------------------------------------------
-
 class AppColors {
   // PRIMARY — high / principal
   static const primary50 = Color(0xFFFAF3F1);
@@ -103,13 +86,6 @@ class AppColors {
   static const info900 = Color(0xFF0B1827);
 }
 
-
-// -------------------------------------------------------------
-// 2. ELEVACIÓN (TuneIn / Colors → elevation)
-// Interfaz oscura: la elevación se expresa con variaciones tonales,
-// no con sombras. 0 = fondo, 5 = nivel más alto.
-// -------------------------------------------------------------
-
 class AppElevation {
   static const elevation0 = AppColors.neutral900;
   static const elevation1 = AppColors.neutral800;
@@ -118,12 +94,6 @@ class AppElevation {
   static const elevation4 = AppColors.neutral500;
   static const elevation5 = AppColors.neutral400;
 }
-
-
-// -------------------------------------------------------------
-// 3. COLORES SEMÁNTICOS (TuneIn / Colors → Semantic)
-// Cada token apunta a un primitivo, igual que en Figma.
-// -------------------------------------------------------------
 
 class AppSemanticColors {
   // BRAND
@@ -175,11 +145,6 @@ class AppSemanticColors {
   static const colorSuccessBorder = AppColors.success400;
 }
 
-
-// -------------------------------------------------------------
-// 4. SPACING (TuneIn / Spacing) — escala base de 4dp
-// -------------------------------------------------------------
-
 class AppSpacing {
   static const double spacingNone0 = 0;
   static const double spacingXs4 = 4;
@@ -198,9 +163,6 @@ class AppSpacing {
   static const double spacing10xl72 = 72;
 }
 
-// Semánticos: apuntan a la escala base, igual que los alias de Figma.
-
-// Padding: espacio interno de un componente.
 class AppPadding {
   static const double paddingXs4 = AppSpacing.spacingXs4;
   static const double paddingS8 = AppSpacing.spacingS8;
@@ -213,7 +175,7 @@ class AppPadding {
   static const double padding5xl48 = AppSpacing.spacing5xl48;
 }
 
-// Margin: espacio externo, separa del borde o de otros bloques.
+
 class AppMargin {
   static const double marginXs4 = AppSpacing.spacingXs4;
   static const double marginS8 = AppSpacing.spacingS8;
@@ -225,7 +187,7 @@ class AppMargin {
   static const double margin5xl48 = AppSpacing.spacing5xl48;
 }
 
-// Gap: separación entre elementos hermanos.
+
 class AppGap {
   static const double gapXs4 = AppSpacing.spacingXs4;
   static const double gapS8 = AppSpacing.spacingS8;
@@ -236,11 +198,6 @@ class AppGap {
   static const double gap5xl48 = AppSpacing.spacing5xl48;
 }
 
-
-// -------------------------------------------------------------
-// 5. RADIUS (TuneIn / Shape Primitives)
-// -------------------------------------------------------------
-
 class AppRadius {
   static const double radiusNone = 0;
   static const double radiusXs = 4;
@@ -249,16 +206,6 @@ class AppRadius {
   static const double radiusL = 24;
   static const double radiusFull = 9999; // botones y reproducción
 }
-
-
-// -------------------------------------------------------------
-// 6. TIPOGRAFÍA (TuneIn / Typography)
-// letterSpacing en px lógicos (Flutter no usa %).
-// height = line-height / size → se escribe como división para que
-// se vea el valor de Figma (ej: 40 / 32 = line-height 40 en h1).
-// leadingDistribution.even reparte el interlineado arriba y abajo,
-// igual que Figma.
-// -------------------------------------------------------------
 
 class AppTypography {
   static const String fontFamilyOutfit = 'Outfit';
@@ -359,7 +306,6 @@ class AppTypography {
     leadingDistribution: TextLeadingDistribution.even,
   );
 
-  // DATA (Space Mono: números de ancho fijo para tiempos y contadores)
   static const TextStyle data1 = TextStyle(
     fontFamily: fontFamilySpaceMono,
     fontSize: 14,
@@ -388,15 +334,6 @@ class AppTypography {
   );
 }
 
-
-// -------------------------------------------------------------
-// 7. MATERIAL TEXT THEME
-// Conecta la escala de TuneIn con los roles de texto de Material,
-// para usar Theme.of(context).textTheme.headlineLarge, etc.
-// data1, data2 y data3 no tienen equivalente: se usan directo
-// (AppTypography.data1).
-// -------------------------------------------------------------
-
 const TextTheme appTextTheme = TextTheme(
   headlineLarge: AppTypography.h1,
   headlineMedium: AppTypography.h2,
@@ -413,15 +350,12 @@ const TextTheme appTextTheme = TextTheme(
   labelSmall: AppTypography.overline,
 );
 
-
-// -------------------------------------------------------------
-// 8. TEMA TUNEIN (modo oscuro)
-// Color mapping: cada rol de Material apunta a un token semántico.
-// -------------------------------------------------------------
-
 final ThemeData tuneInTheme = ThemeData(
   useMaterial3: true,
   brightness: Brightness.dark,
+
+
+  fontFamily: AppTypography.fontFamilyOutfit,
 
   colorScheme: const ColorScheme.dark(
     // MAPA PRIMARY
@@ -436,9 +370,7 @@ final ThemeData tuneInTheme = ThemeData(
     secondaryContainer: AppSemanticColors.colorBrandSecondaryContainer,
     onSecondaryContainer: AppSemanticColors.colorTextOnSecondaryContainer,
 
-    // MAPA ERROR
-    // "error" se usa para texto e íconos sobre el fondo, así que va el
-    // tono claro (border); el tono oscuro (bg) va como container.
+    
     error: AppSemanticColors.colorErrorBorder,
     onError: AppColors.neutral900,
     errorContainer: AppSemanticColors.colorErrorBg,
@@ -456,6 +388,9 @@ final ThemeData tuneInTheme = ThemeData(
     surfaceContainerHigh: AppElevation.elevation4,
     surfaceContainerHighest: AppElevation.elevation5,
 
+    
+    surfaceTint: Colors.transparent,
+
     // MAPA BORDER
     outline: AppSemanticColors.colorBorderDefault,
     outlineVariant: AppSemanticColors.colorBorderSubtle,
@@ -464,7 +399,6 @@ final ThemeData tuneInTheme = ThemeData(
   scaffoldBackgroundColor: AppSemanticColors.colorSurfaceBg,
 
   // TIPOGRAFÍA
-  // bodyColor/displayColor dan el color de texto por defecto.
   textTheme: appTextTheme.apply(
     bodyColor: AppSemanticColors.colorTextBody,
     displayColor: AppSemanticColors.colorTextMain,
@@ -482,7 +416,7 @@ final ThemeData tuneInTheme = ThemeData(
     ),
   ),
 
-  // BOTÓN PRINCIPAL (usa los tokens de action: default y pressed)
+  // BOTÓN PRINCIPAL 
   filledButtonTheme: FilledButtonThemeData(
     style: ButtonStyle(
       backgroundColor: WidgetStateProperty.resolveWith((states) {
@@ -506,6 +440,10 @@ final ThemeData tuneInTheme = ThemeData(
           horizontal: AppPadding.padding2xl24,
           vertical: AppPadding.paddingM12,
         ),
+      ),
+    
+      minimumSize: const WidgetStatePropertyAll(
+        Size(64, AppSpacing.spacing5xl48),
       ),
       shape: const WidgetStatePropertyAll(StadiumBorder()), // radius-full
     ),
