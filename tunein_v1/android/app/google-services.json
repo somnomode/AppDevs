@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "327964784125",
+    "project_id": "tunein2026sa",
+    "storage_bucket": "tunein2026sa.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:327964784125:android:0db5920d78b7ea8696d594",
+        "android_client_info": {
+          "package_name": "com.example.tunein_v1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKNZ-UqBVf6rn7TIwSo04YFpVCfcj6mLI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
