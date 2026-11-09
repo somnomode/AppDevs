@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
- 
+import 'screens/search_screen.dart';
 import 'theme/theme.dart';
  
 void main() => runApp(const TuneInApp());
@@ -32,13 +32,19 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Center(
+  child: _navIndex == 3
+      ? SearchScreen(
+          onBack: () {
+            setState(() => _navIndex = 0);
+          },
+        )
+      : Center(
           child: Text(
             TuneInBottomNavBar.items[_navIndex].label,
             style: Theme.of(context).textTheme.headlineMedium,
           ),
         ),
-      ),
+),
       bottomNavigationBar: TuneInBottomNavBar(
         currentIndex: _navIndex,
         onTap: (i) => setState(() => _navIndex = i),

@@ -1,0 +1,16 @@
+rules_version = '2';
+
+// TuneIn — reglas de Firestore (MODO DESARROLLO, sin login).
+// Pegar en: Firebase console → Firestore Database → Reglas → Publicar.
+//
+// Mientras la app no tenga inicio de sesión, cualquiera con la app puede
+// leer y escribir. Para que no quede abierto para siempre, las reglas
+// se cierran solas el 31 de diciembre de 2026.
+// Cuando agreguen el login, reemplazar por reglas que exijan request.auth.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if request.time < timestamp.date(2026, 12, 31);
+    }
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "project_info": {
+    "project_number": "327964784125",
+    "firebase_url": "https://tunein2026sa-default-rtdb.firebaseio.com",
+    "project_id": "tunein2026sa",
+    "storage_bucket": "tunein2026sa.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:327964784125:android:95fa2bdb0d8f92db96d594",
+        "android_client_info": {
+          "package_name": "com.example.tunein_admin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "327964784125-i0f0t1ik715bdl99mpib97iho9jd76po.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.tunein_admin",
+            "certificate_hash": "690f388b55dc2db66b1c5f066146659e23c0d205"
+          }
+        },
+        {
+          "client_id": "327964784125-gq2k8jt13rlvq2v1u0jtvd2r8gd7cmm0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKNZ-UqBVf6rn7TIwSo04YFpVCfcj6mLI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "327964784125-gq2k8jt13rlvq2v1u0jtvd2r8gd7cmm0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "327964784125-d7n3ernvukklmfgv20pocsge6npepk4o.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.tuneinAdmin"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:327964784125:android:0db5920d78b7ea8696d594",
+        "android_client_info": {
+          "package_name": "com.example.tunein_v1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "327964784125-5pqbs9oe6hja4ctka96klvmffa22o09k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.tunein_v1",
+            "certificate_hash": "264b1e9d8f799b21220720aa6111c30a7a4e0309"
+          }
+        },
+        {
+          "client_id": "327964784125-gq2k8jt13rlvq2v1u0jtvd2r8gd7cmm0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKNZ-UqBVf6rn7TIwSo04YFpVCfcj6mLI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "327964784125-gq2k8jt13rlvq2v1u0jtvd2r8gd7cmm0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "327964784125-d7n3ernvukklmfgv20pocsge6npepk4o.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.tuneinAdmin"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
