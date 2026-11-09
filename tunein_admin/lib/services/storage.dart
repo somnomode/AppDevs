@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'db.dart';
 
@@ -15,12 +18,33 @@ class Storage {
   }
 
   /// Sube [file] a `stations/{stationId}/...` y devuelve su URL pública.
-  static Future<String> upload(PlatformFile file, String stationId) async {
-    final ext = (file.extension ?? 'bin').toLowerCase();
+  static Future<String> upload(PlatformFile file, String stationId) =>
+      _put(file.bytes!, (file.extension ?? 'bin').toLowerCase(), stationId);
+
+  /// Elegir una imagen de la galería con image_picker (código del profe).
+  /// Devuelve los bytes de la imagen, o null si el usuario canceló.
+  static Future<Uint8List?> pickImageFromGallery() async {
+    final foto = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80, // la comprime (queda en JPG)
+      maxWidth: 1200,
+    );
+    return foto?.readAsBytes();
+  }
+
+  /// Sube una imagen elegida con [pickImageFromGallery].
+  static Future<String> uploadImage(Uint8List bytes, String stationId) =>
+      _put(bytes, 'jpg', stationId);
+
+  static Future<String> _put(
+    Uint8List bytes,
+    String ext,
+    String stationId,
+  ) async {
     final name =
         '${DateTime.now().millisecondsSinceEpoch}_${CurrentUser.id}.$ext';
     final ref = FirebaseStorage.instance.ref('stations/$stationId/$name');
-    await ref.putData(file.bytes!, SettableMetadata(contentType: _mime[ext]));
+    await ref.putData(bytes, SettableMetadata(contentType: _mime[ext]));
     return ref.getDownloadURL();
   }
 

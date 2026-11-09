@@ -92,6 +92,14 @@ class Db {
     'createdAt': FieldValue.serverTimestamp(),
   });
 
+  /// Editar los datos de una emisora (solo los campos dados).
+  static Future<void> updateStation(String id, Map<String, Object?> changes) =>
+      stations.doc(id).update(changes);
+
+  /// Editar un post o audio moment ya publicado (solo los campos dados).
+  static Future<void> updateItem(Item i, Map<String, Object?> changes) =>
+      items(i.stationId, i.isMoment).doc(i.id).update(changes);
+
   static Future<void> deleteItem(Item i) =>
       items(i.stationId, i.isMoment).doc(i.id).delete();
 

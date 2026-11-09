@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
@@ -25,6 +27,13 @@ class StudioScreen extends StatelessWidget {
           child: Scaffold(
             appBar: AppBar(
               title: Text(station.name),
+              actions: [
+                IconButton(
+                  tooltip: 'Editar emisora',
+                  icon: const Icon(Icons.edit_outlined),
+                  onPressed: () => _editStation(context, station),
+                ),
+              ],
               bottom: const TabBar(
                 indicatorColor: SocialTokens.accent,
                 labelColor: SocialTokens.accent,
@@ -71,9 +80,20 @@ class StudioScreen extends StatelessWidget {
                               subtitle:
                                   '♥ ${i.likeCount}  ·  💬 ${i.commentCount}',
                               imageUrl: i.imageUrl,
-                              trailing: IconButton(
-                                icon: const Icon(Icons.delete_outline),
-                                onPressed: () => Db.deleteItem(i),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    tooltip: 'Editar',
+                                    icon: const Icon(Icons.edit_outlined),
+                                    onPressed: () => _editItem(context, i),
+                                  ),
+                                  IconButton(
+                                    tooltip: 'Borrar',
+                                    icon: const Icon(Icons.delete_outline),
+                                    onPressed: () => Db.deleteItem(i),
+                                  ),
+                                ],
                               ),
                             ),
                         ],
@@ -87,6 +107,217 @@ class StudioScreen extends StatelessWidget {
       },
     );
   }
+}
+
+/// Editar la emisora propia: datos, ubicación del mapa y portada
+/// (image_picker, igual que en el ejemplo del profesor).
+Future<void> _editStation(BuildContext context, Station s) async {
+  final c = {
+    'name': TextEditingController(text: s.name),
+    'genre': TextEditingController(text: s.genre),
+    'location': TextEditingController(text: s.location),
+    'frequency': TextEditingController(text: s.frequency),
+    'description': TextEditingController(text: s.description),
+    'lat': TextEditingController(text: s.lat?.toString() ?? ''),
+    'lng': TextEditingController(text: s.lng?.toString() ?? ''),
+  };
+  String v(String k) => c[k]!.text.trim();
+  Uint8List? newImage;
+  var saving = false;
+
+  await showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    showDragHandle: true,
+    builder: (sheet) => StatefulBuilder(
+      builder: (sheet, refresh) {
+        Future<void> pickImage() async {
+          final bytes = await Storage.pickImageFromGallery();
+          if (bytes != null) refresh(() => newImage = bytes);
+        }
+
+        Future<void> save() async {
+          refresh(() => saving = true);
+          try {
+            await Db.updateStation(s.id, {
+              'name': v('name'),
+              'genre': v('genre'),
+              'location': v('location'),
+              'frequency': v('frequency'),
+              'description': v('description'),
+              'lat': double.tryParse(v('lat')),
+              'lng': double.tryParse(v('lng')),
+              if (newImage != null)
+                'imageUrl': await Storage.uploadImage(newImage!, s.id),
+            });
+            if (sheet.mounted) Navigator.pop(sheet);
+          } catch (e) {
+            refresh(() => saving = false);
+            if (sheet.mounted) showAlert(sheet, 'Error: $e', error: true);
+          }
+        }
+
+        return Padding(
+          padding: EdgeInsets.fromLTRB(
+            AppPadding.paddingL16,
+            AppPadding.paddingS8,
+            AppPadding.paddingL16,
+            MediaQuery.viewInsetsOf(sheet).bottom + AppPadding.padding2xl24,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Editar emisora',
+                  style: AppTypography.h3.copyWith(
+                    color: AppSemanticColors.colorTextMain,
+                  ),
+                ),
+                const SizedBox(height: AppGap.gapL16),
+                Row(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(AppRadius.radiusS),
+                      child: newImage != null
+                          ? Image.memory(
+                              newImage!,
+                              width: CardTokens.m,
+                              height: CardTokens.m,
+                              fit: BoxFit.cover,
+                            )
+                          : Cover(s.imageUrl, size: CardTokens.m),
+                    ),
+                    const SizedBox(width: AppGap.gapM12),
+                    OutlinedButton.icon(
+                      onPressed: saving ? null : pickImage,
+                      icon: const Icon(Icons.image_outlined),
+                      label: const Text('Cambiar portada'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppGap.gapL16),
+                LabeledField('Nombre', c['name']!),
+                LabeledField('Género', c['genre']!),
+                LabeledField('Ciudad', c['location']!),
+                LabeledField('Frecuencia', c['frequency']!),
+                LabeledField('Descripción', c['description']!),
+                LabeledField('Latitud (para el mapa)', c['lat']!, number: true),
+                LabeledField('Longitud', c['lng']!, number: true),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: saving ? null : save,
+                    child: Text(saving ? 'GUARDANDO…' : 'GUARDAR CAMBIOS'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    ),
+  );
+}
+
+/// Editar un post o audio moment ya publicado: título, texto (posts) y
+/// portada. La portada se elige con image_picker, como en el ejemplo del
+/// profesor (showModalBottomSheet + StatefulBuilder).
+Future<void> _editItem(BuildContext context, Item item) async {
+  final title = TextEditingController(text: item.title);
+  final summary = TextEditingController(text: item.summary);
+  Uint8List? newImage; // portada nueva (null = no cambió)
+  var saving = false;
+
+  await showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    showDragHandle: true,
+    builder: (sheet) => StatefulBuilder(
+      builder: (sheet, refresh) {
+        Future<void> pickImage() async {
+          final bytes = await Storage.pickImageFromGallery();
+          if (bytes != null) refresh(() => newImage = bytes);
+        }
+
+        Future<void> save() async {
+          refresh(() => saving = true);
+          try {
+            await Db.updateItem(item, {
+              'title': title.text.trim(),
+              if (!item.isMoment) 'summary': summary.text.trim(),
+              if (newImage != null)
+                'imageUrl': await Storage.uploadImage(
+                  newImage!,
+                  item.stationId,
+                ),
+            });
+            if (sheet.mounted) Navigator.pop(sheet);
+          } catch (e) {
+            refresh(() => saving = false);
+            if (sheet.mounted) showAlert(sheet, 'Error: $e', error: true);
+          }
+        }
+
+        return Padding(
+          padding: EdgeInsets.fromLTRB(
+            AppPadding.paddingL16,
+            AppPadding.paddingS8,
+            AppPadding.paddingL16,
+            MediaQuery.viewInsetsOf(sheet).bottom + AppPadding.padding2xl24,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  item.isMoment ? 'Editar audio moment' : 'Editar post',
+                  style: AppTypography.h3.copyWith(
+                    color: AppSemanticColors.colorTextMain,
+                  ),
+                ),
+                const SizedBox(height: AppGap.gapL16),
+                LabeledField('Título', title),
+                if (!item.isMoment) LabeledField('Resumen', summary),
+                Row(
+                  children: [
+                    // Vista previa: la portada nueva o la actual.
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(AppRadius.radiusS),
+                      child: newImage != null
+                          ? Image.memory(
+                              newImage!,
+                              width: CardTokens.m,
+                              height: CardTokens.m,
+                              fit: BoxFit.cover,
+                            )
+                          : Cover(item.imageUrl, size: CardTokens.m),
+                    ),
+                    const SizedBox(width: AppGap.gapM12),
+                    OutlinedButton.icon(
+                      onPressed: saving ? null : pickImage,
+                      icon: const Icon(Icons.image_outlined),
+                      label: const Text('Cambiar portada'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppGap.gapL16),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: saving ? null : save,
+                    child: Text(saving ? 'GUARDANDO…' : 'GUARDAR CAMBIOS'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    ),
+  );
 }
 
 /// Un solo formulario para tres casos:
