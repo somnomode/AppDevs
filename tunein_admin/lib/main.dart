@@ -33,6 +33,12 @@ class TuneInApp extends StatelessWidget {
       title: 'TuneIn',
       debugShowCheckedModeBanner: false,
       theme: tuneInAppTheme,
+      // Si el teléfono tiene la letra muy grande (Ajustes → Pantalla%),
+      // la limitamos un poco para que el diseño no se desarme.
+      builder: (context, child) => MediaQuery.withClampedTextScaling(
+        maxScaleFactor: 1.15,
+        child: child!,
+      ),
       home: FutureBuilder(
         future: _firebase,
         builder: (context, snap) {

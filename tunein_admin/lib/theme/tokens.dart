@@ -117,9 +117,6 @@ class PlayerTokens {
   static const handle = AppColors.neutral100;
   static const double handleWidth = 172; // barra "Recomendaciones"
   static const double handleHeight = AppSpacing.spacingXs4;
-  // Portada en pantallas bajas: mínimo, y alto reservado a los controles.
-  static const double coverMin = 120;
-  static const double controlsReserve = 300;
   static const double playButtonSize = IconButtonTokens.l; // 88
   static const double playIcon = IconTokens.l; // 48 (Figma: 50)
   static const double controlIcon = IconTokens.m; // 36: anterior / siguiente

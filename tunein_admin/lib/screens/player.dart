@@ -142,126 +142,119 @@ class _NowPlaying extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = Player.instance;
     final s = np.station;
-    return LayoutBuilder(
-      builder: (context, box) {
-        // Portada como en Figma: todo el ancho menos el margen. En pantallas
-        // bajas se achica para que quepan los controles (~300 de alto).
-        final cover = (box.maxWidth - 2 * PlayerTokens.coverMargin).clamp(
-          PlayerTokens.coverMin,
-          (box.maxHeight - PlayerTokens.controlsReserve).clamp(
-            PlayerTokens.coverMin,
-            double.infinity,
-          ),
-        );
-        return Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: PlayerTokens.coverMargin,
-          ),
-          child: Column(
-            children: [
-              const SizedBox(height: AppGap.gapL16),
-              Cover(np.imageUrl, size: cover, radius: PlayerTokens.coverRadius),
-              const SizedBox(height: PlayerTokens.infoGap),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: PlayerTokens.infoInset,
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            np.moment == null
-                                ? '${s.name} ${s.frequency}'
-                                : np.title,
-                            maxLines: 2,
-                            style: AppTypography.h3.copyWith(color: _text),
-                          ),
-                          Text(
-                            s.subtitle,
-                            style: AppTypography.body2.copyWith(
-                              color: AppSemanticColors.colorTextMuted,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.share_outlined),
-                      onPressed: () => _share(context, s),
-                    ),
-                    _FavoriteButton(s),
-                  ],
-                ),
+    // La portada ocupa el espacio que sobra (cuadrada), así nada se
+    // desborda en pantallas bajas o con letra grande.
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: PlayerTokens.coverMargin),
+      child: Column(
+        children: [
+          const SizedBox(height: AppGap.gapL16),
+          Expanded(
+            child: Center(
+              child: AspectRatio(
+                aspectRatio: 1,
+                child: Cover(np.imageUrl, radius: PlayerTokens.coverRadius),
               ),
-              const SizedBox(height: AppGap.gapM12),
-              _progress(p),
-              const Spacer(),
-              // Controles (Figma "Reproductor"): 36 · 48 · 88 · 48 · 36.
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    padding: EdgeInsets.zero,
-                    iconSize: PlayerTokens.controlIcon,
-                    icon: const Icon(Icons.skip_previous_outlined),
-                    onPressed: p.canSkip ? () => p.skip(-1) : null,
-                  ),
-                  const SizedBox(width: PlayerTokens.controlsGap - _touchPad),
-                  IconButton.filled(
-                    iconSize: PlayerTokens.playIcon,
-                    style: IconButton.styleFrom(
-                      backgroundColor: PlayerTokens.playButtonBg,
-                      fixedSize: const Size.square(PlayerTokens.playButtonSize),
-                    ),
-                    onPressed: p.toggle,
-                    icon: p.loading
-                        ? const CircularProgressIndicator()
-                        : Icon(
-                            p.playing
-                                ? Icons.pause_rounded
-                                : Icons.play_arrow_outlined,
-                            color: _text,
-                          ),
-                  ),
-                  const SizedBox(width: PlayerTokens.controlsGap - _touchPad),
-                  IconButton(
-                    padding: EdgeInsets.zero,
-                    iconSize: PlayerTokens.controlIcon,
-                    icon: const Icon(Icons.skip_next_outlined),
-                    onPressed: p.canSkip ? () => p.skip(1) : null,
-                  ),
-                ],
-              ),
-              const Spacer(),
-              GestureDetector(
-                onTap: () => _recommendations(context, s),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: AppPadding.paddingL16,
-                  ),
+            ),
+          ),
+          const SizedBox(height: PlayerTokens.infoGap),
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: PlayerTokens.infoInset,
+            ),
+            child: Row(
+              children: [
+                Expanded(
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        width: PlayerTokens.handleWidth,
-                        height: PlayerTokens.handleHeight,
-                        color: PlayerTokens.handle,
-                      ),
-                      const SizedBox(height: AppGap.gapM12),
                       Text(
-                        'Recomendaciones',
-                        style: AppTypography.sub1.copyWith(color: _text),
+                        np.moment == null
+                            ? '${s.name} ${s.frequency}'
+                            : np.title,
+                        maxLines: 2,
+                        style: AppTypography.h3.copyWith(color: _text),
+                      ),
+                      Text(
+                        s.subtitle,
+                        style: AppTypography.body2.copyWith(
+                          color: AppSemanticColors.colorTextMuted,
+                        ),
                       ),
                     ],
                   ),
                 ),
+                IconButton(
+                  icon: const Icon(Icons.share_outlined),
+                  onPressed: () => _share(context, s),
+                ),
+                _FavoriteButton(s),
+              ],
+            ),
+          ),
+          const SizedBox(height: AppGap.gapM12),
+          _progress(p),
+          const SizedBox(height: AppGap.gapS8),
+          // Controles (Figma "Reproductor"): 36 · 48 · 88 · 48 · 36.
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                padding: EdgeInsets.zero,
+                iconSize: PlayerTokens.controlIcon,
+                icon: const Icon(Icons.skip_previous_outlined),
+                onPressed: p.canSkip ? () => p.skip(-1) : null,
+              ),
+              const SizedBox(width: PlayerTokens.controlsGap - _touchPad),
+              IconButton.filled(
+                iconSize: PlayerTokens.playIcon,
+                style: IconButton.styleFrom(
+                  backgroundColor: PlayerTokens.playButtonBg,
+                  fixedSize: const Size.square(PlayerTokens.playButtonSize),
+                ),
+                onPressed: p.toggle,
+                icon: p.loading
+                    ? const CircularProgressIndicator()
+                    : Icon(
+                        p.playing
+                            ? Icons.pause_rounded
+                            : Icons.play_arrow_outlined,
+                        color: _text,
+                      ),
+              ),
+              const SizedBox(width: PlayerTokens.controlsGap - _touchPad),
+              IconButton(
+                padding: EdgeInsets.zero,
+                iconSize: PlayerTokens.controlIcon,
+                icon: const Icon(Icons.skip_next_outlined),
+                onPressed: p.canSkip ? () => p.skip(1) : null,
               ),
             ],
           ),
-        );
-      },
+          GestureDetector(
+            onTap: () => _recommendations(context, s),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: AppPadding.paddingL16,
+              ),
+              child: Column(
+                children: [
+                  Container(
+                    width: PlayerTokens.handleWidth,
+                    height: PlayerTokens.handleHeight,
+                    color: PlayerTokens.handle,
+                  ),
+                  const SizedBox(height: AppGap.gapM12),
+                  Text(
+                    'Recomendaciones',
+                    style: AppTypography.sub1.copyWith(color: _text),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
