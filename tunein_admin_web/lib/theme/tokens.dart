@@ -44,7 +44,7 @@ class CardTokens {
 /// logo/* — logo TUNE|IN. Medidas del dibujo en su tamaño base (208);
 /// el widget las escala según el ancho pedido.
 class LogoTokens {
-  static const double splash = 240; // pantalla de carga
+  static const double splash = 240; // (ya no se usa: el splash ahora es nativo, ver assets/images/tunein_splash.png)
   static const double base = 208; // tamaño de diseño
   static const double header = 76; // header de las pestañas
   // Geometría del dibujo (a tamaño base)

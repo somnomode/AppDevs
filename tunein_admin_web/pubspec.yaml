@@ -25,9 +25,14 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  flutter_native_splash: ^2.4.8
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/images/
 
   fonts:
     - family: Outfit
@@ -46,3 +51,34 @@ flutter:
           weight: 400
         - asset: assets/fonts/SpaceMono-Bold.ttf
           weight: 700
+
+# Splash nativo (método del profe, pre-examen 16/11). Después de cambiar
+# esto, correr:  dart run flutter_native_splash:create
+# Fondo = neutral-900 (#03040D), el mismo fondo de la app.
+flutter_native_splash:
+  color: "#03040D"
+  image: assets/images/tunein_splash.png
+
+  android_12:
+    color: "#03040D"
+    image: assets/images/tunein_splash.png
+
+  android: true
+  ios: true
+  web: false
+
+# Ícono de la app: cuadrado con borde "T" + cuadrado naranjo "I" (como el logo).
+# Después de cambiar esto, correr:  dart run flutter_launcher_icons
+flutter_launcher_icons:
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  image_path: assets/images/tunein_icon.png
+  # Android 8+ (ícono adaptativo): fondo neutral-900 + el dibujo encima
+  adaptive_icon_background: "#03040D"
+  adaptive_icon_foreground: assets/images/tunein_icon_foreground.png
+  web:
+    generate: true
+    image_path: assets/images/tunein_icon.png
+    background_color: "#03040D"
+    theme_color: "#FF6B35"
