@@ -1,0 +1,18 @@
+rules_version = '2';
+
+// TuneIn — reglas de Cloud Storage (MODO DESARROLLO, sin login).
+// Pegar en: Firebase console → Storage → Reglas → Publicar.
+//
+// Lectura pública (el reproductor carga audios e imágenes por URL).
+// Escritura abierta hasta el 31/12/2026, solo imágenes o audio, máx. 20 MB.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /stations/{stationId}/{folder}/{file} {
+      allow read: if true;
+      allow write: if request.time < timestamp.date(2026, 12, 31)
+        && request.resource.size < 20 * 1024 * 1024
+        && (request.resource.contentType.matches('image/.*')
+            || request.resource.contentType.matches('audio/.*'));
+    }
+  }
+}

@@ -1,0 +1,118 @@
+TUNEIN — DECISIONES DE DIMENSIONES: FIGMA vs. APP (FLUTTER)
+=============================================================
+
+Este documento explica por qué algunas medidas de la app no son idénticas a
+las de la documentación en Figma ("Botones", "Cards", "Reproductor").
+
+
+1. PRINCIPIO GENERAL: GRILLA DE 4dp
+-----------------------------------
+El sistema de diseño usa una escala de espaciado de base 4
+(spacing-xs-4, spacing-s-8, spacing-m-12, spacing-l-16, spacing-xl-20 ...).
+
+Algunas medidas de Figma no eran múltiplos de 4 (10, 50, 63, 90, 116, 154).
+Si se dejaban así, quedaban fuera de los tokens de espaciado y habría que
+escribirlas a mano en el código, rompiendo la regla de "todo valor viene de
+un token". Por eso se redondearon al múltiplo de 4 más cercano, sin cambiar
+la jerarquía ni la intención visual. La diferencia nunca es mayor a 4dp.
+
+
+2. CAMBIOS POR REDONDEO A LA GRILLA
+-----------------------------------
+Componente / medida            Figma   App   Token en el código
+-----------------------------  ------  ----  ------------------------------------
+Ícono grande (L, play)         50      48    IconTokens.l        (icon-size-l-48)
+Separación controles player    50      48    PlayerTokens.controlsGap (spacing-5xl-48)
+Ancho total controles player   260     256   (36 + 48 + 88 + 48 + 36)
+Gap portada-texto audio clip   10      12    ClipCardTokens.gap  (spacing-m-12)
+Gap portada-texto recomended   10      12    RowTokens.gap       (spacing-m-12)
+Imagen de la card post         116*    112   PostCardTokens.cover
+Alto de la card post           140     144   112 + 16 + 16 (padding spacing-l-16)
+Segmento del toggle Radio|Com. 63      64    ModeToggleTokens.segmentWidth
+Ancho total del toggle         126     128   2 × 64
+Alto del banner card           154     152   CardTokens.bannerHeight
+Ancho de la card XS (con texto) 90     88    (no usada aún en la app)
+
+* 116 no estaba anotado en Figma; resulta de 140 de alto − 12 − 12 de padding.
+  Se usó padding 16 (como el resto de la card) e imagen 112.
+
+
+3. CAMBIO DE CRITERIO: BOTÓN XS "FILLED"
+----------------------------------------
+Figma: círculo de 24 con ícono de 24 (el ícono toca el borde del círculo).
+App:   círculo de 24 con ícono de 16 (icon-size-xs-16).
+
+Razón: el resto de la escala deja aire entre el ícono y el círculo
+(L 48 en 88, M 36 en 48, S 24 en 36). Con 24 en 24 el ícono se ve cortado.
+Se agregó el tamaño de ícono XS = 16 para mantener la proporción de la escala.
+Se usa en el botón play/pausa sobre la portada del audio clip.
+
+
+4. ANCHOS FIJOS → ANCHO FLEXIBLE
+--------------------------------
+En Figma las cards tienen anchos fijos (330, 328, 350, 360, 210) porque se
+diseñaron sobre un frame de 360 de ancho.
+
+En la app, las cards y filas OCUPAN EL ANCHO DE LA PANTALLA menos los
+márgenes, porque cada teléfono tiene un ancho distinto (ej. Pixel ≈ 412dp).
+Se mantienen exactos: altos, portadas, paddings, gaps e íconos.
+
+La portada del reproductor sigue la misma lógica: en Figma es 320 de 360
+(margen de 20 a cada lado). En la app es "ancho de pantalla − 20 − 20", así
+mantiene el margen de Figma en cualquier teléfono. En pantallas muy bajas se
+achica lo justo para que quepan los controles.
+
+
+5. ÁREA TOCABLE MÍNIMA (ACCESIBILIDAD)
+--------------------------------------
+Los íconos pequeños (24 y 36) se ven del tamaño de Figma, pero en la mayoría
+de los casos tienen un área tocable invisible de 48×48 alrededor. Es el
+mínimo recomendado por Google (Material Design) y por las pautas de
+accesibilidad para que se puedan tocar con el dedo sin error.
+
+En los controles del reproductor esto se compensa: el espacio entre íconos
+se calcula para que la distancia VISIBLE siga siendo exactamente 48.
+
+Excepción: el botón play del mini player mantiene el área de 36×36 de Figma,
+porque el mini player mide 56 de alto y uno de 48 casi no deja margen.
+
+
+6. TAMAÑOS QUE NO ERAN VARIABLES EN FIGMA
+-----------------------------------------
+Figma tiene variables de color, espaciado, radio y tipografía, pero no de
+tamaños de ícono, botón o card. Esos tamaños estaban solo en la
+documentación de cada componente. En el código se crearon como tokens de
+componente (archivo lib/theme/tokens.dart), con nombres que siguen la
+nomenclatura del sistema:
+
+  icon-size-xs-16 / s-24 / m-36 / l-48              → IconTokens
+  icon-button-size-xs-24 / s-36 / m-48 / l-88       → IconButtonTokens
+  card-size-xl-144 / l-96 / m-64 / s-56 / xs-48     → CardTokens
+  filas 80 de alto, portada 64, padding 12          → RowTokens
+  audio clip 88 de alto, portada 64, padding 12     → ClipCardTokens
+  post: imagen 112, padding 16                      → PostCardTokens
+
+Recomendación: crear estas mismas variables en Figma (colección
+"TuneIn / Components") para que diseño y código queden 1 a 1.
+
+
+7. DÓNDE SE USA CADA TAMAÑO DE CARD
+-----------------------------------
+  L  (96)  Home → "Recientes" (grilla de 3 por fila)
+  M  (64)  Home → filas por género; Librería; Recomendaciones; audio clip
+  S  (56)  Búsqueda → "Recientes"
+  XS (48)  Mini player
+  Reproductor: portada de ancho completo (320 en un teléfono de 360)
+
+
+8. POR QUÉ SE VE ALGO DISTINTO EN EL EMULADOR
+---------------------------------------------
+Flutter mide en "dp" (puntos independientes de la densidad): un ícono de 24dp
+mide lo mismo físicamente en cualquier teléfono. La resolución del monitor del
+computador solo cambia el tamaño de la ventana del emulador, no las
+proporciones dentro de la app.
+
+Lo que sí cambia es el ancho del teléfono: el frame de Figma mide 360 y un
+Pixel mide unos 412. Por eso, en el emulador, un ícono de 24 ocupa una parte
+un poco menor del ancho que en el mockup. Es el comportamiento esperado y es
+como se vería en un teléfono real.
